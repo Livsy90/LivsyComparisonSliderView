@@ -1,4 +1,4 @@
-# LivsyComparisonView
+# LivsyComparisonSliderView
 
 ## SwiftUI View container for the two other Views, stacked on each other, allows users to partially or fully hide the upper View using a gesture-controlled slider.
 
@@ -10,14 +10,14 @@
 
 ```
 dependencies: [
-    .package(url: "https://github.com/Livsy90/LivsyComparisonView.git")
+    .package(url: "https://github.com/Livsy90/LivsyComparisonSliderView.git")
 ]
 ```
 ## Example
 
 ```swift
 import SwiftUI
-import LivsyComparisonView
+import LivsyComparisonSliderView
 
 struct ContentView: View {
     
