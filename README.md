@@ -2,7 +2,7 @@
 
 ## SwiftUI View container for the two other Views, stacked on each other, allows users to partially or fully hide the upper View using a gesture-controlled slider.
 
-<img src="https://github.com/Livsy90/LivsyComparisonView/blob/main/LivsyComparisonViewDemo.gif" width ="300">
+<img src="https://github.com/Livsy90/LivsyComparisonSliderView/blob/main/LivsyComparisonViewDemo.gif" width ="300">
 
 ## Installation
 
