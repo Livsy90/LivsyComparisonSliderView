@@ -70,7 +70,6 @@ public struct SliderComparisonView<Left: View, Right: View>: View {
                 dividerView()
                     .offset(x: dividerLocation)
             }
-            .ignoresSafeArea()
             .gesture(
                 DragGesture()
                     .onChanged { gesture in
@@ -81,6 +80,7 @@ public struct SliderComparisonView<Left: View, Right: View>: View {
                     }
             )
         }
+        .ignoresSafeArea()
     }
     
     private func dividerView() -> some View {
