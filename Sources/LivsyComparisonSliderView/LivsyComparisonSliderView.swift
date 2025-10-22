@@ -139,7 +139,7 @@ extension SliderComparisonView {
 }
 
 #Preview {
-    // Example usage: compare two images with a white indicator icon.
+    // Example usage: compare two images with a black indicator icon.
     SliderComparisonView(
         lhs: { Image(.winter) },
         rhs: { Image(.spring) }
