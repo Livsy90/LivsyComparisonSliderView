@@ -1,56 +1,38 @@
 import SwiftUI
 
-/// The View container for the two Views, stacked on each other, allows users to partially or fully hide the upper View using a gesture-controlled slider.
+/// A container that overlays two views and reveals the right view with a draggable vertical divider.
+/// - The left view is fully visible by default.
+/// - Dragging the circular handle moves the divider horizontally, masking the right view accordingly.
+/// - Use the chainable modifiers to customize the indicator (image, size, colors) and divider appearance.
 public struct SliderComparisonView<Left: View, Right: View>: View {
     
-    private let indicatorImage: Image
-    private let indicatorImageWidth: CGFloat
-    private let indicatorImageColor: Color
-    private let indicatorColor: Color
-    private let indicatorWidth: CGFloat
+    private var indicatorImage: Image = Image(systemName: "arrow.left.and.right") // Image shown inside the circular drag handle
+    private var indicatorImageWidth: CGFloat = 22 // Width of the indicator image inside the handle
+    private var indicatorImageColor: Color = .gray // Color of the indicator image
+    private var indicatorColor: Color = .white // Fill color of the circular handle
+    private var indicatorWidth: CGFloat = 44 // Diameter of the circular handle
+    private var dividerColor: Color = .clear // Color of the thin divider line behind the handle
+    private var dividerWidth: CGFloat = .zero // Width of the divider line
+    private let lhs: () -> Left // Builder for the left (base) view
+    private let rhs: () -> Right // Builder for the right (revealed) view
     
-    private let dividerColor: Color
-    private let dividerWidth: CGFloat
-    
-    private let lhs: () -> Left
-    private let rhs: () -> Right
-    
-    @State private var dividerLocation: CGFloat = .zero
-    
-    /// LivsyComparisonView initializer.
+    /// Creates a slider comparison view from two view-building closures.
     /// - Parameters:
-    ///   - indicatorImage: The image that will be overlaid on top of the slider indicator.
-    ///   - indicatorImageColor: Slider indicator color.
-    ///   - indicatorImageWidth: Slider indicator image height.
-    ///   - indicatorWidth: Slider indicator height
-    ///   - indicatorColor: Slider indicator color.
-    ///   - dividerColor: Slider indicator divider color.
-    ///   - dividerWidth: Slider indicator divider width.
-    ///   - lhs: Left hand side View
-    ///   - rhs: Right hand side View
+    ///   - lhs: Closure that builds the left (base) view, always fully rendered.
+    ///   - rhs: Closure that builds the right view, which is revealed by dragging the divider.
     public init(
-        indicatorImage: Image = Image(systemName: "arrow.left.and.right"),
-        indicatorImageColor: Color = .gray,
-        indicatorImageWidth: CGFloat = 22,
-        indicatorWidth: CGFloat = 44,
-        indicatorColor: Color = .white,
-        dividerColor: Color = .clear,
-        dividerWidth: CGFloat = .zero,
-        lhs: @escaping () -> Left,
-        rhs: @escaping () -> Right
+        @ViewBuilder lhs: @escaping () -> Left,
+        @ViewBuilder rhs: @escaping () -> Right
     ) {
-        self.indicatorImage = indicatorImage
-        self.indicatorImageColor = indicatorImageColor
-        self.indicatorImageWidth = indicatorImageWidth
-        self.indicatorWidth = indicatorWidth
-        self.indicatorColor = indicatorColor
-        self.dividerWidth = dividerWidth
-        self.dividerColor = dividerColor
         self.lhs = lhs
         self.rhs = rhs
     }
     
+    /// Current horizontal offset of the divider relative to the center.
+    @State private var dividerLocation: CGFloat = .zero
+    
     public var body: some View {
+        // Layout both views and the draggable divider; mask the right view based on the divider position.
         GeometryReader { geometry in
             ZStack {
                 Color.clear
@@ -73,6 +55,7 @@ public struct SliderComparisonView<Left: View, Right: View>: View {
             .gesture(
                 DragGesture()
                     .onChanged { gesture in
+                        // Clamp the drag location so the handle stays within the view's bounds
                         dividerLocation = min(
                             max(gesture.location.x - geometry.size.width / 2, -geometry.size.width / 2),
                             geometry.size.width / 2
@@ -83,6 +66,7 @@ public struct SliderComparisonView<Left: View, Right: View>: View {
         .ignoresSafeArea()
     }
     
+    /// Builds the divider with a circular drag handle and optional thin line.
     private func dividerView() -> some View {
         Rectangle()
             .fill(dividerColor)
@@ -101,4 +85,64 @@ public struct SliderComparisonView<Left: View, Right: View>: View {
             }
     }
     
+}
+
+extension SliderComparisonView {
+    /// Sets the image displayed inside the circular handle.
+    public func indicatorImage(_ image: Image) -> Self {
+        var copy = self
+        copy.indicatorImage = image
+        return copy
+    }
+    
+    /// Sets the color of the image inside the handle.
+    public func indicatorImageColor(_ color: Color) -> Self {
+        var copy = self
+        copy.indicatorImageColor = color
+        return copy
+    }
+    
+    /// Sets the width of the image inside the handle.
+    public func indicatorImageWidth(_ width: CGFloat) -> Self {
+        var copy = self
+        copy.indicatorImageWidth = width
+        return copy
+    }
+    
+    /// Sets the fill color of the circular handle.
+    public func indicatorColor(_ color: Color) -> Self {
+        var copy = self
+        copy.indicatorColor = color
+        return copy
+    }
+    
+    /// Sets the diameter of the circular handle.
+    public func indicatorWidth(_ width: CGFloat) -> Self {
+        var copy = self
+        copy.indicatorWidth = width
+        return copy
+    }
+    
+    /// Sets the color of the thin divider line behind the handle.
+    public func dividerColor(_ color: Color) -> Self {
+        var copy = self
+        copy.dividerColor = color
+        return copy
+    }
+    
+    /// Sets the width of the thin divider line behind the handle.
+    public func dividerWidth(_ width: CGFloat) -> Self {
+        var copy = self
+        copy.dividerWidth = width
+        return copy
+    }
+}
+
+#Preview {
+    // Example usage: compare two images with a white indicator icon.
+    SliderComparisonView(
+        lhs: { Image(.winter) },
+        rhs: { Image(.spring) }
+    )
+    .indicatorImageColor(.black)
 }
